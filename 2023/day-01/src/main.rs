@@ -1,16 +1,23 @@
 fn main() {
-    // include_str!(""./part1.txt");
-    println!("Hello, world!");
+    let part1_input = include_str!("./part1.txt");
+    let result = part1(part1_input);
+
+    dbg!(result);
 }
 
 fn part1(input: &str) -> i32 {
-    let mut digits_to_parse = String::new();
-    let first = input.chars().next().unwrap();
-    let last = input.chars().rev().next().unwrap();
-    digits_to_parse.push(first);
-    digits_to_parse.push(last);
+    input.lines()
+        .filter(|line| !line.is_empty())
+        .map( |line| {
+            let mut digits_to_parse = String::new();
+            let first = line.chars().find(|c| c.is_numeric()).unwrap();
+            let last = line.chars().rev().find(|c| c.is_numeric()).unwrap();
+            digits_to_parse.push(first);
+            digits_to_parse.push(last);
 
-    digits_to_parse.parse::<i32>().unwrap()
+            digits_to_parse.parse::<i32>().unwrap()
+        }
+    ).sum()    
 }
 
 #[cfg(test)]
@@ -51,7 +58,9 @@ mod tests {
 "1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
-treb7uchet";
+treb7uchet
+
+";
 
         let result = part1(sample);
 
