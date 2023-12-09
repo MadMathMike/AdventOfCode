@@ -2,11 +2,15 @@ mod intervals;
 mod parser;
 mod transform;
 
+use std::time::Instant;
+
 use crate::intervals::*;
 use crate::parser::*;
 use crate::transform::*;
 
 fn main() {
+    let start = Instant::now();
+
     let input = include_str!("../part1.txt");
 
     let farm_maps = parse_input(input);
@@ -36,6 +40,9 @@ fn main() {
     let part2_result = partx(&seed_intervals, &transform_layers);
     dbg!(part2_result);
     assert_eq!(part2_result, 59370572);
+
+    let duration = start.elapsed();
+    println!("Time elapsed is: {:?}", duration);
 }
 
 fn part1(seeds: &Vec<i64>, transform_layers: &Vec<Vec<IntervalTransform>>) -> i64 {
