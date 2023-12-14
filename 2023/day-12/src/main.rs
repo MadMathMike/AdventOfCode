@@ -11,12 +11,30 @@ fn main() {
     let input = include_str!("../part1.txt");
     let records = parse_input(input);
 
-    let sum = sum_valid_arrangement_counts(&records);
-
-    dbg!(sum);
+    let sum_part1 = sum_valid_arrangement_counts(&records);
+    dbg!(sum_part1);
 
     let duration = start.elapsed();
     println!("Time elapsed is: {:?}", duration);
+
+    // let sum_part2 = sum_valid_arrangement_counts_part2(&records);
+
+    // dbg!(sum_part2);
+
+    let duration = start.elapsed();
+    println!("Time elapsed is: {:?}", duration);
+}
+
+fn sum_valid_arrangement_counts_part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
+    let unfolded_records = records.iter()
+        .map(unfold_record);
+
+    let sum_part2: usize = unfolded_records
+        .map(|(mask, damaged_segments)| 
+            count_valid_arrangements(&(&mask, damaged_segments)))
+        .sum();
+    
+    sum_part2
 }
 
 fn sum_valid_arrangement_counts(records: &Vec<(&str, Vec<usize>)>) -> usize {
@@ -48,6 +66,7 @@ fn count_valid_arrangements(record: &(&str, Vec<usize>)) -> usize {
     )
 }
 
+// TODO: probably change springs_arrangment type to be String
 fn count_valid_arrangements_recursive(
     mask: &str, 
     springs_arrangement: &str, 
@@ -107,6 +126,25 @@ fn matches(mask: &str, arrangement: &str) -> bool {
         .all(|(i, char)| 
             mask.chars().nth(i) == Some('?') 
             || char.eq(&mask.chars().nth(i).unwrap()))
+}
+
+fn unfold_record(record: &(&str, Vec<usize>)) -> (String, Vec<usize>) {
+    let (mask, _damaged_segments) = record;
+
+    let mut repeated_mask = String::from(*mask);
+    for _ in 0..4 {
+        repeated_mask.push('?');
+        repeated_mask.push_str(mask);
+    }
+
+    let mut repeated_damaged_segments = Vec::<usize>::new();
+    for _ in 0..5 {
+        for segment in _damaged_segments.iter() {
+            repeated_damaged_segments.push(*segment)
+        }        
+    }
+
+    (repeated_mask, repeated_damaged_segments)
 }
 
 #[cfg(test)]
@@ -197,5 +235,32 @@ mod tests {
         let sum = sum_valid_arrangement_counts(&records);
 
         assert_eq!(sum, 21);
+    }
+
+    #[test]
+    fn unfold_record_duplicates_4_times() {
+        let record = ("???.###", vec![1,1,3]);
+        let unfolded_record = unfold_record(&record);
+        let (mask, damaged_segments) = unfolded_record;
+        
+        assert_eq!(mask, "???.###????.###????.###????.###????.###");
+        assert_eq!(damaged_segments, vec![1,1,3,1,1,3,1,1,3,1,1,3,1,1,3]);
+    }
+
+    #[test]
+    fn sum_valid_arrangement_counts_part2_works_on_sample() {
+        let input = 
+"???.### 1,1,3
+.??..??...?##. 1,1,3
+?#?#?#?#?#?#?#? 1,3,1,6
+????.#...#... 4,1,1
+????.######..#####. 1,6,5
+?###???????? 3,2,1";
+
+        let records = parse_input(&input);
+
+        let sum = sum_valid_arrangement_counts_part2(&records);
+
+        assert_eq!(sum, 525152);
     }
 }
