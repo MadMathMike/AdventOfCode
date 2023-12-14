@@ -1,12 +1,17 @@
 mod parser;
 
 use std::time::Instant;
+use crate::parser::parse_input;
 
 fn main() {
     let start = Instant::now();
 
     let input = include_str!("../part1.txt");
+    let records = parse_input(input);
 
+    let sum = sum_valid_arrangment_counts(&records);
+
+    dbg!(sum);
 
     let duration = start.elapsed();
     println!("Time elapsed is: {:?}", duration);
@@ -32,6 +37,10 @@ fn count_valid_arrangements(record: &(&str, Vec<usize>)) -> usize {
         return 1;
     }
 
+    if num_of_unassigned_working_springs == 1 {
+        return num_of_segment_gaps;
+    }
+
     0
 }
 
@@ -42,16 +51,23 @@ mod tests {
     #[test]
     fn count_valid_arrangements_returns_1() {
         let record = ("???.###", vec![1,1,3]);
-
         let arrangment_count = count_valid_arrangements(&record);
-
         assert_eq!(arrangment_count, 1);
 
         let record = ("????.#..", vec![4,1,1]);
-
         let arrangment_count = count_valid_arrangements(&record);
-
         assert_eq!(arrangment_count, 1);
+    }
+
+    #[test]
+    fn count_valid_arrangements_returns_number_of_gaps() {
+        let record = ("?#.??????#??#?#?#?#?", vec![1,1,15]);
+        let arrangment_count = count_valid_arrangements(&record);
+        assert_eq!(arrangment_count, 2);
+        
+        let record = ("??????##????#?.?.??.", vec![1,7,4,1,2]);
+        let arrangment_count = count_valid_arrangements(&record);
+        assert_eq!(arrangment_count, 4);
     }
 
     #[test]

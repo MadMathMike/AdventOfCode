@@ -1,4 +1,4 @@
-fn parse(input: &str) -> Vec<(&str, Vec<usize>)> {
+pub fn parse_input(input: &str) -> Vec<(&str, Vec<usize>)> {
     input.lines()
         .map(parse_line)
         .collect()
@@ -32,7 +32,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_returns_list_of_mask_and_damaged_segments() {
+    fn parse_input_returns_list_of_mask_and_damaged_segments() {
         let input = 
 "???.### 1,1,3
 .??..??...?##. 1,1,3
@@ -40,7 +40,7 @@ mod tests {
 ????.#...#... 4,1,1
 ????.######..#####. 1,6,5
 ?###???????? 3,2,1";
-        let records = parse(input);
+        let records = parse_input(input);
 
         assert_eq!(records.len(), 6);
 
