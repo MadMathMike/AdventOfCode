@@ -1,10 +1,9 @@
 mod parser;
-mod spring_arrangements;
 
 use std::time::Instant;
 
 use crate::parser::*;
-use crate::spring_arrangements::*;
+use day_12::*;
 
 fn main() {
     let start = Instant::now();
@@ -34,11 +33,19 @@ fn main() {
     let duration = start.elapsed();
     println!("Time elapsed is: {:?}", duration);
 
+    /*
     let part2_result = part2(&records);
     dbg!(part2_result);
     //assert_eq!(part2_result, xxx);
     let duration = start.elapsed();
     println!("Time elapsed is: {:?}", duration);
+    */
+}
+
+fn part1(records: &Vec<(&str, Vec<usize>)>) -> usize {
+    records.iter()
+        .map(|record| count_valid_arrangements(record.0, &record.1))
+        .sum()
 }
 
 fn part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
@@ -52,10 +59,3 @@ fn part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
     
     sum_part2
 }
-
-fn part1(records: &Vec<(&str, Vec<usize>)>) -> usize {
-    records.iter()
-        .map(|record| count_valid_arrangements(record.0, &record.1))
-        .sum()
-}
-

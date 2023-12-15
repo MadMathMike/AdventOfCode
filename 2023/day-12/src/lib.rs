@@ -100,15 +100,6 @@ mod tests {
 
     #[test]
     fn count_valid_arrangements_works_on_sample_records() {
-        /*        
-            ???.### 1,1,3 - 1 arrangement
-            .??..??...?##. 1,1,3 - 4 arrangements
-            ?#?#?#?#?#?#?#? 1,3,1,6 - 1 arrangement
-            ????.#...#... 4,1,1 - 1 arrangement
-            ????.######..#####. 1,6,5 - 4 arrangements
-            ?###???????? 3,2,1 - 10 arrangements
-        */
-
         let record = ("???.###", vec![1,1,3]);
         let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
@@ -132,6 +123,21 @@ mod tests {
         let record = ("?###????????", vec![3,2,1]);
         let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 10);
+
+        // "unfolded" records
+        let record = (
+            "????.#...#...?????.#...#...?????.#...#...?????.#...#...?????.#...#...", 
+            vec![4,1,1,4,1,1,4,1,1,4,1,1,4,1,1]
+        );
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
+        assert_eq!(arrangement_count, 16);
+
+        let record = (
+            "????.######..#####.?????.######..#####.?????.######..#####.?????.######..#####.?????.######..#####.", 
+            vec![1,6,5,1,6,5,1,6,5,1,6,5,1,6,5]
+        );
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
+        assert_eq!(arrangement_count, 2500);
     }
 
     #[test]
