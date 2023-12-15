@@ -26,20 +26,18 @@ fn main() {
     let duration = start.elapsed();
     println!("Time elapsed is: {:?}", duration);
 
-
     let part2_sample_result = part2(&sample_records);
     dbg!(part2_sample_result);
     assert_eq!(part2_sample_result, 525152);
     let duration = start.elapsed();
     println!("Time elapsed is: {:?}", duration);
 
-    /*
-    let part2_result = part2(&records);
-    dbg!(part2_result);
-    //assert_eq!(part2_result, xxx);
-    let duration = start.elapsed();
-    println!("Time elapsed is: {:?}", duration);
-    */
+    // let part2_result = part2(&records);
+    // dbg!(part2_result);
+    // //assert_eq!(part2_result, xxx);
+    // let duration = start.elapsed();
+    // println!("Time elapsed is: {:?}", duration);
+    
 }
 
 fn part1(records: &Vec<(&str, Vec<usize>)>) -> usize {

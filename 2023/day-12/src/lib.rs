@@ -1,6 +1,9 @@
 use std::iter::repeat;
 
 pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &Vec<usize>) -> usize {
+    // println!("Mask: {}", mask);
+    // let start = std::time::Instant::now();
+
     let num_of_segment_gaps = damaged_segment_lengths.len() - 1;
     let num_of_damaged_springs:usize = damaged_segment_lengths.iter().sum();
     let num_of_unassigned_working_springs = 
@@ -27,13 +30,19 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &Vec<usize>
         damaged_segments.push(segment);
     }
 
-    count_valid_arrangements_recursive(
+    let count = count_valid_arrangements_recursive(
         mask, 
         "", 
         num_of_unassigned_working_springs,
         &damaged_segments, 
         0
-    )
+    );
+
+
+    // let duration = start.elapsed();
+    // println!("Time elapsed is: {:?}", duration);
+
+    count
 }
 
 // TODO: probably change springs_arrangment type to be String
@@ -45,16 +54,15 @@ fn count_valid_arrangements_recursive(
     depth: usize) 
     -> usize 
 {
-    if !matches(mask, springs_arrangement) {
-        return 0;
-    }        
-
-    let mut next_springs_arrangement = String::from(springs_arrangement);
-
     if depth == damaged_segments.len() {
-        next_springs_arrangement.push_str(&repeat('.').take(num_of_unassigned_working_springs).collect::<String>());
+        let mut next_springs_arrangement = String::with_capacity(mask.len());
+        next_springs_arrangement.push_str(springs_arrangement);
+        repeat('.')
+            .take(num_of_unassigned_working_springs)
+            .for_each(|f| next_springs_arrangement.push(f));
 
-        return if matches(mask, &next_springs_arrangement) {
+        return if matches(mask, &next_springs_arrangement, springs_arrangement.len()) {
+            print!("1");
             1
         } else {
             0
@@ -63,31 +71,41 @@ fn count_valid_arrangements_recursive(
 
     let mut valid_arrangement_count = 0;
     for i in 0..(num_of_unassigned_working_springs + 1) {
-        let mut next_springs_arrangement = String::from(&next_springs_arrangement);
-        next_springs_arrangement.push_str(&repeat('.').take(i).collect::<String>());
+        let mut next_springs_arrangement = String::with_capacity(mask.len());
+        next_springs_arrangement.push_str(springs_arrangement);
+        repeat('.')
+            .take(i)
+            .for_each(|f| next_springs_arrangement.push(f));
         
         if depth < damaged_segments.len() { 
             next_springs_arrangement.push_str(&damaged_segments[depth]);
         }
 
-        valid_arrangement_count += count_valid_arrangements_recursive(
-            mask, 
-            &next_springs_arrangement, 
-            num_of_unassigned_working_springs - i, 
-            damaged_segments, 
-            depth + 1
-        );
+        valid_arrangement_count += 
+            if matches(mask, &next_springs_arrangement, springs_arrangement.len()) {
+                count_valid_arrangements_recursive(
+                    mask, 
+                    &next_springs_arrangement, 
+                    num_of_unassigned_working_springs - i, 
+                    damaged_segments, 
+                    depth + 1
+                )
+            } else {
+                0
+            }
     }
 
     valid_arrangement_count
 }
 
-fn matches(mask: &str, arrangement: &str) -> bool {
-    arrangement.is_empty() 
-    || arrangement.char_indices()
+fn matches(mask: &str, arrangement: &str, start_at: usize) -> bool {
+    let mask_chars = &mask[start_at..arrangement.len()];
+    let arrangement_chars = &arrangement[start_at..arrangement.len()];
+
+    arrangement_chars.char_indices()
         .all(|(i, char)| 
-            mask.chars().nth(i) == Some('?') 
-            || char.eq(&mask.chars().nth(i).unwrap()))
+        mask_chars.chars().nth(i) == Some('?')
+            || char.eq(&mask_chars.chars().nth(i).unwrap()))
 }
 
 #[cfg(test)]
@@ -152,9 +170,9 @@ mod tests {
         let mask = "?###????????";
         
         let arrangement = ".###.##.#...";
-        assert!(matches(mask, arrangement));
+        assert!(matches(mask, arrangement, 0));
         
         let arrangement = ".###..##...#";
-        assert!(matches(mask, arrangement));
+        assert!(matches(mask, arrangement, 0));
     }
 }
