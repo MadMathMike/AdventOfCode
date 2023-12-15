@@ -37,7 +37,6 @@ fn main() {
     // //assert_eq!(part2_result, xxx);
     // let duration = start.elapsed();
     // println!("Time elapsed is: {:?}", duration);
-    
 }
 
 fn part1(records: &Vec<(&str, Vec<usize>)>) -> usize {
@@ -56,4 +55,35 @@ fn part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
         .sum();
     
     sum_part2
+}
+
+pub fn unfold(mask: &str, damaged_segments: &Vec<usize>) -> (String, Vec<usize>) {
+    let repetitions = 5;
+    let repeated_mask = (0..repetitions)
+        .map(|_| mask)
+        .collect::<Vec<&str>>()
+        .join("?");
+
+    let repeated_damaged_segements = (0..repetitions)
+        .map(|_| damaged_segments)
+        .flatten()
+        .map(|segment_length| *segment_length)
+        .collect::<Vec<usize>>();
+
+    (repeated_mask, repeated_damaged_segements)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn unfold_record_duplicates_4_times() {
+        let record = ("???.###", vec![1,1,3]);
+        let unfolded_record = unfold(record.0, &record.1);
+        let (mask, damaged_segments) = unfolded_record;
+
+        assert_eq!(mask, "???.###????.###????.###????.###????.###");
+        assert_eq!(damaged_segments, vec![1,1,3,1,1,3,1,1,3,1,1,3,1,1,3]);
+    }
 }
