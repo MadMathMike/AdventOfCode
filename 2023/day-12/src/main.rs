@@ -11,21 +11,36 @@ fn main() {
     let input = include_str!("../part1.txt");
     let records = parse_input(input);
 
-    let sum_part1 = sum_valid_arrangement_counts(&records);
-    dbg!(sum_part1);
+    let sample_input = include_str!("../sample.txt");
+    let sample_records = parse_input(sample_input);
 
+    let part1_sample_result = part1(&sample_records);
+    dbg!(part1_sample_result);
+    assert_eq!(part1_sample_result, 21);
     let duration = start.elapsed();
     println!("Time elapsed is: {:?}", duration);
 
-    // let sum_part2 = sum_valid_arrangement_counts_part2(&records);
+    let part1_result = part1(&records);
+    dbg!(part1_result);
+    assert_eq!(part1_result, 8193);
+    let duration = start.elapsed();
+    println!("Time elapsed is: {:?}", duration);
 
-    // dbg!(sum_part2);
 
+    let part2_sample_result = part2(&sample_records);
+    dbg!(part2_sample_result);
+    assert_eq!(part2_sample_result, 525152);
+    let duration = start.elapsed();
+    println!("Time elapsed is: {:?}", duration);
+
+    let part2_result = part2(&records);
+    dbg!(part2_result);
+    //assert_eq!(part2_result, xxx);
     let duration = start.elapsed();
     println!("Time elapsed is: {:?}", duration);
 }
 
-fn sum_valid_arrangement_counts_part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
+fn part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
     let unfolded_records = records.iter()
         .map(|record| unfold(record.0, &record.1));
 
@@ -37,7 +52,7 @@ fn sum_valid_arrangement_counts_part2(records: &Vec<(&str, Vec<usize>)>) -> usiz
     sum_part2
 }
 
-fn sum_valid_arrangement_counts(records: &Vec<(&str, Vec<usize>)>) -> usize {
+fn part1(records: &Vec<(&str, Vec<usize>)>) -> usize {
     records.iter()
         .map(|record| count_valid_arrangements(record.0, &record.1))
         .sum()
@@ -186,39 +201,5 @@ mod tests {
         
         let arrangement = ".###..##...#";
         assert!(matches(mask, arrangement));
-    }
-
-    #[test]
-    fn sum_valid_arrangement_counts_works_on_sample() {
-        let input = 
-"???.### 1,1,3
-.??..??...?##. 1,1,3
-?#?#?#?#?#?#?#? 1,3,1,6
-????.#...#... 4,1,1
-????.######..#####. 1,6,5
-?###???????? 3,2,1";
-
-        let records = parse_input(&input);
-
-        let sum = sum_valid_arrangement_counts(&records);
-
-        assert_eq!(sum, 21);
-    }
-
-    #[test]
-    fn sum_valid_arrangement_counts_part2_works_on_sample() {
-        let input = 
-"???.### 1,1,3
-.??..??...?##. 1,1,3
-?#?#?#?#?#?#?#? 1,3,1,6
-????.#...#... 4,1,1
-????.######..#####. 1,6,5
-?###???????? 3,2,1";
-
-        let records = parse_input(&input);
-
-        let sum = sum_valid_arrangement_counts_part2(&records);
-
-        assert_eq!(sum, 525152);
     }
 }
