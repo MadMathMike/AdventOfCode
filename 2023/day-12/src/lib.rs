@@ -62,7 +62,7 @@ fn count_valid_arrangements_recursive(
             .for_each(|f| next_springs_arrangement.push(f));
 
         return if matches(mask, &next_springs_arrangement, springs_arrangement.len()) {
-            print!("1");
+            //print!("1");
             1
         } else {
             0
@@ -124,7 +124,7 @@ mod tests {
     }
 
     #[test]
-    fn count_valid_arrangements_works_on_sample_records() {
+    fn count_valid_arrangements_works_on_part1_sample_records() {
         let record = ("???.###", vec![1,1,3]);
         let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
@@ -148,8 +148,10 @@ mod tests {
         let record = ("?###????????", vec![3,2,1]);
         let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 10);
-
-        // "unfolded" records
+    }
+    
+    #[test]
+    fn count_valid_arrangements_works_on_part2_sample_records() {
         let record = (
             "????.#...#...?????.#...#...?????.#...#...?????.#...#...?????.#...#...", 
             vec![4,1,1,4,1,1,4,1,1,4,1,1,4,1,1]
@@ -163,6 +165,13 @@ mod tests {
         );
         let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 2500);
+
+        let record = (
+            "?###??????????###??????????###??????????###??????????###????????", 
+            vec![3,2,1,3,2,1,3,2,1,3,2,1,3,2,1]
+        );
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
+        assert_eq!(arrangement_count, 506250);
     }
 
     #[test]
