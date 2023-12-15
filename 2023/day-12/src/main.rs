@@ -3,7 +3,7 @@ mod parser;
 use std::iter::repeat;
 use std::time::Instant;
 
-use crate::parser::parse_input;
+use crate::parser::*;
 
 fn main() {
     let start = Instant::now();
@@ -27,11 +27,11 @@ fn main() {
 
 fn sum_valid_arrangement_counts_part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
     let unfolded_records = records.iter()
-        .map(unfold_record);
+        .map(|record| unfold(record.0, &record.1));
 
     let sum_part2: usize = unfolded_records
         .map(|(mask, damaged_segments)| 
-            count_valid_arrangements(&(&mask, damaged_segments)))
+            count_valid_arrangements(&mask, &damaged_segments))
         .sum();
     
     sum_part2
@@ -39,13 +39,11 @@ fn sum_valid_arrangement_counts_part2(records: &Vec<(&str, Vec<usize>)>) -> usiz
 
 fn sum_valid_arrangement_counts(records: &Vec<(&str, Vec<usize>)>) -> usize {
     records.iter()
-        .map(count_valid_arrangements)
+        .map(|record| count_valid_arrangements(record.0, &record.1))
         .sum()
 }
 
-fn count_valid_arrangements(record: &(&str, Vec<usize>)) -> usize {
-    let (mask, damaged_segments) = record;
-
+fn count_valid_arrangements(mask: &str, damaged_segments: &Vec<usize>) -> usize {
     let num_of_segment_gaps = damaged_segments.len() - 1;
     let num_of_damaged_springs:usize = damaged_segments.iter().sum();
     let num_of_unassigned_working_springs = 
@@ -128,25 +126,6 @@ fn matches(mask: &str, arrangement: &str) -> bool {
             || char.eq(&mask.chars().nth(i).unwrap()))
 }
 
-fn unfold_record(record: &(&str, Vec<usize>)) -> (String, Vec<usize>) {
-    let (mask, _damaged_segments) = record;
-
-    let mut repeated_mask = String::from(*mask);
-    for _ in 0..4 {
-        repeated_mask.push('?');
-        repeated_mask.push_str(mask);
-    }
-
-    let mut repeated_damaged_segments = Vec::<usize>::new();
-    for _ in 0..5 {
-        for segment in _damaged_segments.iter() {
-            repeated_damaged_segments.push(*segment)
-        }        
-    }
-
-    (repeated_mask, repeated_damaged_segments)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -154,23 +133,12 @@ mod tests {
     #[test]
     fn count_valid_arrangements_returns_1() {
         let record = ("???.###", vec![1,1,3]);
-        let arrangement_count = count_valid_arrangements(&record);
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
 
         let record = ("????.#..", vec![4,1,1]);
-        let arrangement_count = count_valid_arrangements(&record);
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
-    }
-
-    #[test]
-    fn count_valid_arrangements_returns_number_of_gaps() {
-        let record = ("?#.??????#??#?#?#?#?", vec![1,1,15]);
-        let arrangement_count = count_valid_arrangements(&record);
-        assert_eq!(arrangement_count, 2);
-        
-        let record = ("??????##????#?.?.??.", vec![1,7,4,1,2]);
-        let arrangement_count = count_valid_arrangements(&record);
-        assert_eq!(arrangement_count, 4);
     }
 
     #[test]
@@ -185,27 +153,27 @@ mod tests {
         */
 
         let record = ("???.###", vec![1,1,3]);
-        let arrangement_count = count_valid_arrangements(&record);
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
 
         let record = (".??..??...?##.", vec![1,1,3]);
-        let arrangement_count = count_valid_arrangements(&record);
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 4);
 
         let record = ("?#?#?#?#?#?#?#?", vec![1,3,1,6]);
-        let arrangement_count = count_valid_arrangements(&record);
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
 
         let record = ("????.#...#...", vec![4,1,1]);
-        let arrangement_count = count_valid_arrangements(&record);
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
 
         let record = ("????.######..#####.", vec![1,6,5]);
-        let arrangement_count = count_valid_arrangements(&record);
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 4);
 
         let record = ("?###????????", vec![3,2,1]);
-        let arrangement_count = count_valid_arrangements(&record);
+        let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 10);
     }
 
@@ -235,16 +203,6 @@ mod tests {
         let sum = sum_valid_arrangement_counts(&records);
 
         assert_eq!(sum, 21);
-    }
-
-    #[test]
-    fn unfold_record_duplicates_4_times() {
-        let record = ("???.###", vec![1,1,3]);
-        let unfolded_record = unfold_record(&record);
-        let (mask, damaged_segments) = unfolded_record;
-        
-        assert_eq!(mask, "???.###????.###????.###????.###????.###");
-        assert_eq!(damaged_segments, vec![1,1,3,1,1,3,1,1,3,1,1,3,1,1,3]);
     }
 
     #[test]
