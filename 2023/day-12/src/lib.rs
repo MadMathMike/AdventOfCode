@@ -1,8 +1,8 @@
 use std::iter::repeat;
 
-pub fn count_valid_arrangements(mask: &str, damaged_segments: &Vec<usize>) -> usize {
-    let num_of_segment_gaps = damaged_segments.len() - 1;
-    let num_of_damaged_springs:usize = damaged_segments.iter().sum();
+pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &Vec<usize>) -> usize {
+    let num_of_segment_gaps = damaged_segment_lengths.len() - 1;
+    let num_of_damaged_springs:usize = damaged_segment_lengths.iter().sum();
     let num_of_unassigned_working_springs = 
         mask.len() 
         - num_of_segment_gaps // Each segment gap must have at least one working spring
@@ -10,6 +10,21 @@ pub fn count_valid_arrangements(mask: &str, damaged_segments: &Vec<usize>) -> us
 
     if num_of_unassigned_working_springs == 0 {
         return 1;
+    }
+
+    let mut damaged_segments = Vec::<String>::new();
+    for i in 0..damaged_segment_lengths.len() {
+        let segment_length = damaged_segment_lengths[i];
+
+        let mut damaged_segment = repeat('#').take(segment_length).collect::<Vec<char>>();
+
+        if i < damaged_segment_lengths.len() - 1 {
+            damaged_segment.push('.');
+        }
+
+        let segment = damaged_segment.iter().collect::<String>();
+
+        damaged_segments.push(segment);
     }
 
     count_valid_arrangements_recursive(
@@ -26,7 +41,7 @@ fn count_valid_arrangements_recursive(
     mask: &str, 
     springs_arrangement: &str, 
     num_of_unassigned_working_springs: usize,
-    damaged_segments: &Vec<usize>, 
+    damaged_segments: &Vec<String>, 
     depth: usize) 
     -> usize 
 {
@@ -46,21 +61,13 @@ fn count_valid_arrangements_recursive(
         }
     }
 
-    if depth > 0 {
-        next_springs_arrangement.push_str(".");
-
-        if !matches(mask, &next_springs_arrangement) {
-            return 0;
-        }
-    }
-
     let mut valid_arrangement_count = 0;
     for i in 0..(num_of_unassigned_working_springs + 1) {
         let mut next_springs_arrangement = String::from(&next_springs_arrangement);
         next_springs_arrangement.push_str(&repeat('.').take(i).collect::<String>());
         
         if depth < damaged_segments.len() { 
-            next_springs_arrangement.push_str(&repeat('#').take(damaged_segments[depth]).collect::<String>());
+            next_springs_arrangement.push_str(&damaged_segments[depth]);
         }
 
         valid_arrangement_count += count_valid_arrangements_recursive(
