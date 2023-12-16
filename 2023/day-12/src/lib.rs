@@ -30,8 +30,7 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &[usize]) -
         mask, 
         "", 
         num_of_unassigned_working_springs,
-        &damaged_segments, 
-        0
+        &damaged_segments
     );
 
     // let duration = start.elapsed();
@@ -41,19 +40,17 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &[usize]) -
 }
 
 // TODO:
-  // 1. Eliminate 'depth' parameter (can use damaged segments?)
-    // replace 'damaged_segments' with remaining damaged segments
-  // 2. Eliminate 'springs_arrangement'
+  // 1. Eliminate 'springs_arrangement'
     // replace 'mask' with 'remaining_mask'
+  // MAY need to turn remaining_damaged_segments back into &[usize]
 fn count_valid_arrangements_recursive(
     mask: &str, 
     springs_arrangement: &str, 
     num_of_unassigned_working_springs: usize,
-    damaged_segments: &Vec<String>, 
-    depth: usize) 
+    remaining_damaged_segments: &[String]) 
     -> usize 
 {
-    if depth == damaged_segments.len() {
+    if remaining_damaged_segments.len() == 0 {
         let mut next_springs_arrangement = String::with_capacity(mask.len());
         next_springs_arrangement.push_str(springs_arrangement);
         repeat('.')
@@ -76,8 +73,8 @@ fn count_valid_arrangements_recursive(
             .take(i)
             .for_each(|f| next_springs_arrangement.push(f));
         
-        if depth < damaged_segments.len() { 
-            next_springs_arrangement.push_str(&damaged_segments[depth]);
+        if remaining_damaged_segments.len() > 0 { 
+            next_springs_arrangement.push_str(&remaining_damaged_segments[0]);
         }
 
         valid_arrangement_count += 
@@ -86,8 +83,7 @@ fn count_valid_arrangements_recursive(
                     mask, 
                     &next_springs_arrangement, 
                     num_of_unassigned_working_springs - i, 
-                    damaged_segments, 
-                    depth + 1
+                    &remaining_damaged_segments[1..]
                 )
             } else {
                 0
