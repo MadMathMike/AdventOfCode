@@ -28,7 +28,6 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &[usize]) -
 
     let count = count_valid_arrangements_recursive(
         mask, 
-        "", 
         num_of_unassigned_working_springs,
         &damaged_segments
     );
@@ -39,26 +38,20 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &[usize]) -
     count
 }
 
-// TODO:
-  // 1. Eliminate 'springs_arrangement'
-    // replace 'mask' with 'remaining_mask'
-  // MAY need to turn remaining_damaged_segments back into &[usize]
+// TODO: MAY need to turn remaining_damaged_segments back into &[usize]
 fn count_valid_arrangements_recursive(
-    mask: &str, 
-    springs_arrangement: &str, 
+    remaining_mask: &str,
     num_of_unassigned_working_springs: usize,
     remaining_damaged_segments: &[String]) 
     -> usize 
 {
     if remaining_damaged_segments.len() == 0 {
-        let mut next_springs_arrangement = String::with_capacity(mask.len());
-        next_springs_arrangement.push_str(springs_arrangement);
+        let mut arrangement_chunk = String::with_capacity(remaining_mask.len());
         repeat('.')
             .take(num_of_unassigned_working_springs)
-            .for_each(|f| next_springs_arrangement.push(f));
+            .for_each(|f| arrangement_chunk.push(f));
 
-        return if matches(mask, &next_springs_arrangement, springs_arrangement.len()) {
-            //print!("1");
+        return if matches(remaining_mask, &arrangement_chunk) {
             1
         } else {
             0
@@ -67,21 +60,19 @@ fn count_valid_arrangements_recursive(
 
     let mut valid_arrangement_count = 0;
     for i in 0..(num_of_unassigned_working_springs + 1) {
-        let mut next_springs_arrangement = String::with_capacity(mask.len());
-        next_springs_arrangement.push_str(springs_arrangement);
+        let mut arrangement_chunk = String::with_capacity(remaining_mask.len());
         repeat('.')
             .take(i)
-            .for_each(|f| next_springs_arrangement.push(f));
+            .for_each(|f| arrangement_chunk.push(f));
         
         if remaining_damaged_segments.len() > 0 { 
-            next_springs_arrangement.push_str(&remaining_damaged_segments[0]);
+            arrangement_chunk.push_str(&remaining_damaged_segments[0]);
         }
 
         valid_arrangement_count += 
-            if matches(mask, &next_springs_arrangement, springs_arrangement.len()) {
+            if matches(remaining_mask, &arrangement_chunk) {
                 count_valid_arrangements_recursive(
-                    mask, 
-                    &next_springs_arrangement, 
+                    &remaining_mask[arrangement_chunk.len()..],
                     num_of_unassigned_working_springs - i, 
                     &remaining_damaged_segments[1..]
                 )
@@ -93,11 +84,10 @@ fn count_valid_arrangements_recursive(
     valid_arrangement_count
 }
 
-fn matches(mask: &str, arrangement: &str, start_at: usize) -> bool {
-    let mask_chars = &mask[start_at..arrangement.len()];
-    let arrangement_chars = &arrangement[start_at..arrangement.len()];
+fn matches(mask: &str, arrangement: &str) -> bool {
+    let mask_chars = &mask[0..arrangement.len()];
 
-    arrangement_chars.char_indices()
+    arrangement.char_indices()
         .all(|(i, char)| 
         mask_chars.chars().nth(i) == Some('?')
             || char.eq(&mask_chars.chars().nth(i).unwrap()))
@@ -174,9 +164,9 @@ mod tests {
         let mask = "?###????????";
         
         let arrangement = ".###.##.#...";
-        assert!(matches(mask, arrangement, 0));
+        assert!(matches(mask, arrangement));
         
         let arrangement = ".###..##...#";
-        assert!(matches(mask, arrangement, 0));
+        assert!(matches(mask, arrangement));
     }
 }
