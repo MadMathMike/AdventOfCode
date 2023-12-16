@@ -45,7 +45,7 @@ fn part1(records: &Vec<(&str, Vec<usize>)>) -> usize {
         .sum()
 }
 
-fn part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
+pub fn part2(records: &Vec<(&str, Vec<usize>)>) -> usize {
     let unfolded_records = records.iter()
         .map(|record| unfold(record.0, &record.1));
 

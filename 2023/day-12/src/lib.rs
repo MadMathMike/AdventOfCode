@@ -1,6 +1,6 @@
 use std::iter::repeat;
 
-pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &Vec<usize>) -> usize {
+pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &[usize]) -> usize {
     // println!("Mask: {}", mask);
     // let start = std::time::Instant::now();
 
@@ -10,10 +10,6 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &Vec<usize>
         mask.len() 
         - num_of_segment_gaps // Each segment gap must have at least one working spring
         - num_of_damaged_springs;
-
-    if num_of_unassigned_working_springs == 0 {
-        return 1;
-    }
 
     let mut damaged_segments = Vec::<String>::new();
     for i in 0..damaged_segment_lengths.len() {
@@ -38,14 +34,17 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &Vec<usize>
         0
     );
 
-
     // let duration = start.elapsed();
     // println!("Time elapsed is: {:?}", duration);
 
     count
 }
 
-// TODO: probably change springs_arrangment type to be String
+// TODO:
+  // 1. Eliminate 'depth' parameter (can use damaged segments?)
+    // replace 'damaged_segments' with remaining damaged segments
+  // 2. Eliminate 'springs_arrangement'
+    // replace 'mask' with 'remaining_mask'
 fn count_valid_arrangements_recursive(
     mask: &str, 
     springs_arrangement: &str, 
@@ -118,7 +117,7 @@ mod tests {
         let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
 
-        let record = ("????.#..", vec![4,1,1]);
+        let record = ("????.#.?", vec![4,1,1]);
         let arrangement_count = count_valid_arrangements(record.0, &record.1);
         assert_eq!(arrangement_count, 1);
     }
