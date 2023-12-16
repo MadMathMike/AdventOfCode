@@ -11,25 +11,10 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &[usize]) -
         - num_of_segment_gaps // Each segment gap must have at least one working spring
         - num_of_damaged_springs;
 
-    let mut damaged_segments = Vec::<String>::new();
-    for i in 0..damaged_segment_lengths.len() {
-        let segment_length = damaged_segment_lengths[i];
-
-        let mut damaged_segment = repeat('#').take(segment_length).collect::<Vec<char>>();
-
-        if i < damaged_segment_lengths.len() - 1 {
-            damaged_segment.push('.');
-        }
-
-        let segment = damaged_segment.iter().collect::<String>();
-
-        damaged_segments.push(segment);
-    }
-
     let count = count_valid_arrangements_recursive(
         mask, 
         num_of_unassigned_working_springs,
-        &damaged_segments
+        &damaged_segment_lengths
     );
 
     // let duration = start.elapsed();
@@ -42,7 +27,7 @@ pub fn count_valid_arrangements(mask: &str, damaged_segment_lengths: &[usize]) -
 fn count_valid_arrangements_recursive(
     remaining_mask: &str,
     num_of_unassigned_working_springs: usize,
-    remaining_damaged_segments: &[String]) 
+    remaining_damaged_segments: &[usize]) 
     -> usize 
 {
     if remaining_damaged_segments.len() == 0 {
@@ -64,9 +49,15 @@ fn count_valid_arrangements_recursive(
         repeat('.')
             .take(i)
             .for_each(|f| arrangement_chunk.push(f));
-        
+
         if remaining_damaged_segments.len() > 0 { 
-            arrangement_chunk.push_str(&remaining_damaged_segments[0]);
+            repeat('#')
+                .take(remaining_damaged_segments[0])
+                .for_each(|f| arrangement_chunk.push(f));
+
+            if remaining_damaged_segments.len() > 1 {
+                arrangement_chunk.push('.');
+            }
         }
 
         valid_arrangement_count += 
